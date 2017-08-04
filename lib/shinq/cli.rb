@@ -32,7 +32,7 @@ module Shinq
 
         opt.on('-w', '--worker VALUE', 'Name of worker class') do |v|
           worker_class = v.camelize.safe_constantize
-          raise OptionParseError, "worker class #{v.camelize} corresponding to #{v} does not exist" unless worker_class
+          #raise OptionParseError, "worker class #{v.camelize} corresponding to #{v} does not exist" unless worker_class
           opts[:worker_name] = v
           opts[:worker_class] = worker_class
         end
@@ -105,6 +105,7 @@ module Shinq
     end
 
     def run
+      Shinq::Client.check_schedulability(table_name: Shinq.configuration.worker_name)
       klass = !options.statistics.nil? && options.statistics ? Shinq::Statistics : Shinq::Launcher
 
       se = ServerEngine.create(nil, klass, {
